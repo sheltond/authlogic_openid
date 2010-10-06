@@ -111,8 +111,8 @@ module AuthlogicOpenid
               if auto_register?
                 auto_reg_record = klass.new
                 auto_reg_record.openid_identifier = openid_identifier
-                registration.merge!(ax.data) if ax
                 auto_reg_record.send(:map_openid_registration, registration)
+                auto_reg_record.send(:map_openid_axregistration, ax) if ax
 
                 if !auto_reg_record.save
                   auto_reg_record.errors.each {|attr, msg| errors.add(attr, msg) }

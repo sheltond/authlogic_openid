@@ -98,8 +98,8 @@ module AuthlogicOpenid
               @openid_error = result.message
             else
               self.openid_identifier = openid_identifier
-              registration.merge!(ax.data) if ax
               map_openid_registration(registration)
+              map_openid_axregistration(ax) if ax
             end
 
             return true
@@ -117,6 +117,15 @@ module AuthlogicOpenid
           self.name ||= registration[:fullname] if respond_to?(:name) && !registration[:fullname].blank?
           self.first_name ||= registration[:fullname].split(" ").first if respond_to?(:first_name) && !registration[:fullname].blank?
           self.last_name ||= registration[:fullname].split(" ").last if respond_to?(:last_name) && !registration[:last_name].blank?
+        end
+
+        # Override this method to map the OpenID AX registration fields with fields in your model. See the required_fields and
+        # optional_fields configuration options to enable this feature.
+        #
+        # Basically you will get a hash of values passed as a single argument. Then just map them as you see fit. Check out
+        # the source of this method for an example.
+        def map_openid_axregistration(ax) # :doc:
+          self.email ||= ax['http://axschema.org/contact/email'] if respond_to?(:email) && !ax['http://axschema.org/contact/email'].blank?
         end
 
         # This method works in conjunction with map_saved_attributes.
